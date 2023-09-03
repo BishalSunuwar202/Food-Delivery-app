@@ -35,6 +35,7 @@ import classes from "./AvailableMeals.module.css";
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
   //in this case, loading can be true
 
   const fetchMealsHandler = useCallback(async () => {
@@ -65,7 +66,10 @@ const AvailableMeals = () => {
 
   //we are using useEffect to directly render the meals
   useEffect(() => {
-    fetchMealsHandler();
+    fetchMealsHandler().catch((error: any) => {
+      setLoading(false);
+      setHttpError(error.message);
+    });
   }, [fetchMealsHandler]);
   // const mealList = meals.map((meal) => (
   //   <li>
@@ -83,6 +87,14 @@ const AvailableMeals = () => {
     return (
       <section className={classes.MealsLoading}>
         <p>Hard Loading hae ta....</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     );
   }
